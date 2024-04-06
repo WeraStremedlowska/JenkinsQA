@@ -37,7 +37,7 @@ jobs:
           chmod -R 777 ./jenkins_backup/var/jenkins_home
 
       - name: Docker login
-        run: echo _$R4h)GB6.@bR+p | docker login --username wera1 --password-stdin
+        run: echo samsung1234!!!! | docker login --username wera1 --password-stdin
 
 
       - name: Docker start
