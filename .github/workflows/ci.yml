@@ -45,15 +45,6 @@ jobs:
       - name: Wait for the Jenkins
         run: ./.github/wait-for-jenkins.sh
 
-      - name: Verify environment variables
-        run: |
-            if [ -z "${{ secrets.ADMIN_USERNAME }}" ] || [ -z "${{ secrets.ADMIN_PASSWORD }}" ]; then
-              echo "Required secrets are not set. Please check the repository's Secrets settings.";
-              exit 1;
-            else
-              echo "All required secrets are set.";
-            fi
-
       - name: Maven test
         run: mvn test
         env:
