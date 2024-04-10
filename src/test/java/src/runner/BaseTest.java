@@ -57,7 +57,7 @@ public abstract class BaseTest {
             clearData();
             startDriver();
             getWeb();
-            loginWeb();
+//            loginWeb();
         } catch (Exception e) {
             closeDriver();
             throw new RuntimeException(e);
