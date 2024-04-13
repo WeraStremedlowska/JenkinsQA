@@ -54,7 +54,7 @@ public abstract class BaseTest {
     protected void beforeMethod(Method method) {
         ProjectUtils.logf("Run %s.%s", this.getClass().getName(), method.getName());
         try {
-//            clearData();
+            clearData();
             startDriver();
             getWeb();
             loginWeb();
