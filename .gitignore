@@ -41,5 +41,3 @@ build/
 
 ### project ###
 local.properties
-
-jenkins_data/jenkins_backup.tar
