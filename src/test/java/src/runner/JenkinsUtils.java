@@ -30,18 +30,18 @@ public class JenkinsUtils {
         return page.substring(crumbTagBeginIndex, crumbTagEndIndex);
     }
 
-    private static Set<String> getSubstringsFromPage(String page, String from, String to) {
-        // 255 - максимально возможная длинна имени, но если используется не латиница или специальные символы, страка будет длинней из-за кодирования (пробел - %20)
-        return getSubstringsFromPage(page, from, to, 256);
+    private static Set<String> getSubstringsFromPage(String page, String from) {
+        // 255 - the maximum possible length of a name, but if non-Latin characters or special symbols are used, the string will be longer due to encoding (space - %20)
+        return getSubstringsFromPage(page, from, 256);
     }
 
-    private static Set<String> getSubstringsFromPage(String page, String from, String to, int maxSubstringLength) {
+    private static Set<String> getSubstringsFromPage(String page, String from, int maxSubstringLength) {
         Set<String> result = new HashSet<>();
 
         int index = page.indexOf(from);
         while (index != -1) {
             index += from.length();
-            int endIndex = page.indexOf(to, index);
+            int endIndex = page.indexOf("/\"", index);
 
             if (endIndex != -1 && endIndex - index < maxSubstringLength) {
                 result.add(page.substring(index, endIndex));
@@ -129,26 +129,26 @@ public class JenkinsUtils {
     private static void deleteJobs() {
         String mainPage = getPage("");
         deleteByLink("job/%s/doDelete",
-                getSubstringsFromPage(mainPage, "href=\"job/", "/\""),
+                getSubstringsFromPage(mainPage, "href=\"job/"),
                 getCrumbFromPage(mainPage));
     }
 
     private static void deleteViews() {
         String mainPage = getPage("");
         deleteByLink("view/%s/doDelete",
-                getSubstringsFromPage(mainPage, "href=\"/view/", "/\""),
+                getSubstringsFromPage(mainPage, "href=\"/view/"),
                 getCrumbFromPage(mainPage));
 
         String viewPage = getPage("me/my-views/view/all/");
         deleteByLink("user/admin/my-views/view/%s/doDelete",
-                getSubstringsFromPage(viewPage, "href=\"/user/admin/my-views/view/", "/\""),
+                getSubstringsFromPage(viewPage, "href=\"/user/admin/my-views/view/"),
                 getCrumbFromPage(viewPage));
     }
 
     private static void deleteUsers() {
         String userPage = getPage("manage/securityRealm/");
         deleteByLink("manage/securityRealm/user/%s/doDelete",
-                getSubstringsFromPage(userPage, "href=\"user/", "/\"").stream()
+                getSubstringsFromPage(userPage, "href=\"user/").stream()
                         .filter(user -> !user.equals(ProjectUtils.getUserName())).collect(Collectors.toSet()),
                 getCrumbFromPage(userPage));
     }
@@ -156,7 +156,7 @@ public class JenkinsUtils {
     private static void deleteNodes() {
         String mainPage = getPage("");
         deleteByLink("manage/computer/%s/doDelete",
-                getSubstringsFromPage(mainPage, "href=\"/computer/", "/\""),
+                getSubstringsFromPage(mainPage, "href=\"/computer/"),
                 getCrumbFromPage(mainPage));
     }
 
