@@ -68,16 +68,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb
 
-      - name: Prepare output directory
-        run: |
-          mkdir -p screenshots
-          chmod 777 screenshots
-
       - name: Run FFMPEG
         run: |
-          Xvfb :99 &
+          Xvfb :99 -screen 0 1024x768x24 &
+          sleep 5  # gives Xvfb some time to start
+          xset -display :99 q || echo "Xvfb did not start properly" >&2
           echo "DISPLAY=:99" >> $GITHUB_ENV
-          ffmpeg -video_size 1024x768 -framerate 30 -f x11grab -i :99.0 screenshots/output.webm &
+          ffmpeg -video_size 1024x768 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -t 10 output.webm 2> ffmpeg_error.log &
 
       - name: Maven test
         run: mvn test
@@ -96,6 +93,7 @@ jobs:
         with:
           name: screenshots-and-report
           path: output.webm
+
 
       - name: Test Reporter
         uses: dorny/test-reporter@v1.8.0
