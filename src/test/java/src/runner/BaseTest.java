@@ -1,15 +1,24 @@
 package src.runner;
 
+import org.monte.media.Format;
+import org.monte.media.FormatKeys;
+import org.monte.media.math.Rational;
+import org.monte.screenrecorder.ScreenRecorder;
 import org.openqa.selenium.WebDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
 
+import java.awt.*;
 import java.lang.reflect.Method;
+
+import static org.monte.media.FormatKeys.*;
+import static org.monte.media.VideoFormatKeys.*;
 
 @Listeners({FilterForTests.class})
 public abstract class BaseTest {
 
     private WebDriver driver;
+    private ScreenRecorder screenRecorder;
 
     private void startDriver() {
         ProjectUtils.log("Browser open");
@@ -50,6 +59,28 @@ public abstract class BaseTest {
         }
     }
 
+    private void startRecording() throws Exception {
+        GraphicsConfiguration gc = GraphicsEnvironment
+                .getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice()
+                .getDefaultConfiguration();
+
+        this.screenRecorder = new ScreenRecorder(gc,
+                new Format(MediaTypeKey, FormatKeys.MediaType.FILE, MimeTypeKey, MIME_AVI),
+                new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE,
+                        CompressorNameKey, ENCODING_AVI_TECHSMITH_SCREEN_CAPTURE,
+                        DepthKey, 24, FrameRateKey, Rational.valueOf(15),
+                        QualityKey, 1.0f,
+                        KeyFrameIntervalKey, 15 * 60),
+                new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey, "black", FrameRateKey, Rational.valueOf(30)),
+                null);
+        this.screenRecorder.start();
+    }
+
+    private void stopRecording() throws Exception {
+        this.screenRecorder.stop();
+    }
+
     @BeforeMethod
     protected void beforeMethod(Method method) {
         ProjectUtils.logf("Run %s.%s", this.getClass().getName(), method.getName());
@@ -58,6 +89,7 @@ public abstract class BaseTest {
             startDriver();
             getWeb();
             loginWeb();
+            startRecording();
         } catch (Exception e) {
             closeDriver();
             throw new RuntimeException(e);
@@ -68,6 +100,11 @@ public abstract class BaseTest {
     protected void afterMethod(Method method, ITestResult testResult) {
         if (testResult.isSuccess() || ProjectUtils.closeBrowserIfError()) {
             stopDriver();
+        }
+        try {
+            stopRecording(); // Stop recording
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
         ProjectUtils.logf("Execution time is %o sec\n\n", (testResult.getEndMillis() - testResult.getStartMillis()) / 1000);
