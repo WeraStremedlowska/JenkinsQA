@@ -74,7 +74,7 @@ jobs:
           sleep 5  # Ensures Xvfb starts
           xset -display :99 q || echo "Xvfb did not start properly" >&2
           echo "DISPLAY=:99" >> $GITHUB_ENV
-          ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :0.0+100,200 output.mp4 &
+          ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :99.0 output.mp4 &
 
       - name: Maven test
         run: mvn test
