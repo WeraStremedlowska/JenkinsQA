@@ -84,6 +84,11 @@ jobs:
          APP_OPTIONS: host=localhost;port=8080;admin.username=${{ secrets.ADMIN_USERNAME }};admin.password=${{ secrets.ADMIN_PASSWORD }}
          CI_RUN: true
 
+      - name: Stop FFMPEG
+        run: |
+          pkill ffmpeg
+          sleep 5
+
 
       - name: Attach screenshots and reports
         uses: actions/upload-artifact@v4
