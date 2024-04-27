@@ -2,76 +2,65 @@ package api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.parsing.Parser;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
-
-import java.util.Base64;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class APIWithRestAssuredTest extends JenkinsApi {
 
-    private String username;
-    private String token;
-
-    @BeforeEach
-    public void setup() {
-        RestAssured.defaultParser = Parser.JSON;
-        RestAssured.baseURI = "http://localhost:8080";
-        String encodedAuthString = getEncodedAuthString();
-        if (encodedAuthString == null) {
-            System.err.println("Authentication string is missing or incorrect.");
-            return;
-        }
-        String[] creds = new String(Base64.getDecoder().decode(encodedAuthString)).split(":", 2);
-        if (creds.length < 2) {
-            System.err.println("Authentication credentials are not properly formatted.");
-            return;
-        }
-        RestAssured.authentication = RestAssured.preemptive().basic(creds[0], creds[1]);
-        this.username = creds[0];
-        this.token = creds[1];
-    }
-
+    @Order(1)
     @Test
     public void testCreateItem() {
-        String xmlPayload = "<project>\n" +
-                "    <description>This is a more detailed description for the Jenkins job.</description>\n" +
-                "    <keepDependencies>false</keepDependencies>\n" +
-                "    <canRoam>true</canRoam>\n" +
-                "    <disabled>false</disabled>\n" +
-                "    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>\n" +
-                "    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>\n" +
-                "    <concurrentBuild>false</concurrentBuild>\n" +
-                "</project>";
+        RestAssured.authentication = RestAssured.preemptive().basic(username, token);
 
         given()
                 .contentType(ContentType.XML)
-                .body(xmlPayload)
+                .body(TestData.XML_PAYLOAD)
                 .when()
                 .post("/createItem?name=NewJobRA")
                 .then()
                 .statusCode(200);
     }
 
+    @Order(2)
+    @Test
+    public void testGetItem() {
+        RestAssured.authentication = RestAssured.preemptive().basic(username, token);
+
+        given()
+                .accept(ContentType.JSON)
+                .when()
+                .get("/api/json?tree=jobs[name,description,lastBuild[lastBuildNumber,duration],lastCompletedBuild[result],nextBuildNumber]")
+                .then()
+                .statusCode(200)
+                .body("jobs.find { it.name == 'NewJobRA' }.description", equalTo("This is a more detailed description for the Jenkins job."))
+                .body("jobs.find { it.name == 'NewJobRA' }.nextBuildNumber", equalTo(1))
+                .body("jobs.find { it.name == 'NewJobRA' }.lastBuild", nullValue())
+                .body("jobs.find { it.name == 'NewJobRA' }.lastCompletedBuild", nullValue());
+    }
+
+    @Order(3)
     @Test
     public void testDeleteItem() {
+        RestAssured.authentication = RestAssured.preemptive().basic(username, token);
+
         given()
-                .contentType(ContentType.JSON)
-                .accept(ContentType.JSON)
-                .auth()
-                .preemptive()
-                .basic(username, token)
+                .contentType(ContentType.XML)
                 .when()
                 .post("/job/NewJobRA/doDelete")
                 .peek() // print the response body to the console
                 .then()
                 .statusCode(302)
-                .header("Location", "http://localhost:8080/");
+                .header("Location", equalTo("http://localhost:8080/"));
     }
 }
+
 
 
 

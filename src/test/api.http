@@ -133,6 +133,29 @@ Content-Type: application/xml
     </columns>
     <recurse>false</recurse>
 </hudson.model.ListView>
+
+###
+
+POST {{host}}/job/MyJob/config.xml
+Authorization: Basic {{ token }}
+Accept: application/xml
+
+<scm class="hudson.plugins.git.GitSCM">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+        <hudson.plugins.git.UserRemoteConfig>
+            <url>https://github.com/WeraStremedlowska/JenkinsQA.git</url>
+        </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+        <hudson.plugins.git.BranchSpec>
+            <name>*/main</name>
+        </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions/>
+</scm>
 ###
 
 POST {{host}}/job/MyJob/config.xml
@@ -154,6 +177,24 @@ Content-Type: application/xml
         <hudson.tasks.Shell>
             <command>java -version</command>
         </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>ls -la</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>pwd</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>echo "The current working directory is: $(pwd)"</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>cd /var/jenkins_home/workspace/MyJob</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>rm -rf .gitignore .gitattributes .github</command>
+        </hudson.tasks.Shell>
+        <hudson.tasks.Shell>
+            <command>curl https://ci.jenkins.io/api/json</command>
+        </hudson.tasks.Shell>
     </builders>
     <publishers/>
     <buildWrappers/>
@@ -169,12 +210,12 @@ Authorization: Basic {{ token }}
 ###
 
 GET {{host}}/job/MyJob/lastBuild/api/json
-Authorization: Basic {{ token }}
+Jenkins-Crumb: {{ crumb }}
 Accept: application/json
 
 ###
 
-GET {{host}}/job/MyJob/lastBuild/consoleText
+GET {{host}}/job/DeleteGitRepo/lastBuild/consoleText
 Authorization: Basic {{ token }}
 
 ###
@@ -203,5 +244,32 @@ Authorization: Basic {{ token }}
 
 GET {{host}}/view/MyView/job/NewJob2/api/json?tree=lastBuild[result],name
 Authorization: Basic {{ token }}
+
+###
+
+POST {{host}}/createItem?name=DeleteGitRepo
+Authorization: Basic {{ token }}
+Content-Type: application/xml
+
+<project>
+    <actions/>
+    <description>Delete Git repository</description>
+    <keepDependencies>false</keepDependencies>
+    <properties/>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <hudson.tasks.Shell>
+            <command>rm -rf /var/jenkins_home/workspace/MyJob/.git</command>
+        </hudson.tasks.Shell>
+    </builders>
+    <publishers/>
+    <buildWrappers/>
+</project>
 
 
