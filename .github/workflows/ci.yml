@@ -72,7 +72,7 @@ jobs:
         run: |
           Xvfb :99 &
           echo "DISPLAY=:99" >> $GITHUB_ENV
-          ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :99.0 -c:v libvpx -crf 10 -b:v 1M output.webm
+          ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :99.0 -c:v libvpx -crf 10 -b:v 1M output.webm &
 
       - name: Maven test
         run: mvn test
@@ -80,6 +80,9 @@ jobs:
           CHROME_OPTIONS: --remote-allow-origins=*;--disable-gpu;--no-sandbox;--disable-dev-shm-usage;--headless=new;--window-size=1920,1080
           APP_OPTIONS: host=localhost;port=8080;admin.username=${{ secrets.ADMIN_USERNAME }};admin.password=${{ secrets.ADMIN_PASSWORD }}
           CI_RUN: true
+
+      - name: Delay
+        run: sleep 60
 
       - name: Attach screenshots and reports
         uses: actions/upload-artifact@v3
