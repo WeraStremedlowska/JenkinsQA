@@ -1,11 +1,12 @@
+# Fetches the JSON representation of the Jenkins server's state
 GET https://ci.jenkins.io/api/json
 Accept: application/json
 
 ###
-
-POST http://localhost:8080/createItem?name=MyJob
+# Creates a new job on the Jenkins server
+POST http://localhost:8080/createItem?name=NewJob2
 Content-Type: application/xml
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+Authorization: Basic {{ token }}
 
 <project>
     <actions/>
@@ -26,9 +27,23 @@ Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDh
 
 ###
 
+POST http://localhost:8080/job/NewJob2/doDelete
+Content-Type: application/json
+Accept: application/json
+Authorization: Basic {{ token }}
+
+###
+
+POST http://localhost:8080/view/NewView/doDelete
+Content-Type: application/json
+Accept: application/json
+Authorization: Basic {{ token }}
+
+###
+# Creates a new view on the Jenkins server
 POST http://localhost:8080/createView?name=MyView
 Content-Type: application/xml
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+Authorization: Basic {{ token }}
 
 <listView>
     <name>MyView</name>
@@ -52,37 +67,87 @@ Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDh
 </listView>
 
 ###
-
+# Adds the job to the view on the Jenkins server
 POST http://localhost:8080/view/MyView/addJobToView?name=MyJob
 Content-Type: application/xml
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+Authorization: Basic {{ token }}
+
+###
+# Triggers a build for the job on the Jenkins server
+POST http://localhost:8080/job/NewJob2/build
+Authorization: Basic {{ token }}
 
 ###
 
-POST http://localhost:8080/job/MyJob/build
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+POST http://localhost:8080/view/MyView/config.xml
+Authorization: Basic {{ token }}
+
+###
+# Fetch the current configuration of the view
+GET http://localhost:8080/view/MyView/config.xml
+Authorization: Basic {{ token }}
+Accept: application/xml
+Output: config.xml
+
+###
+
+# Post the updated configuration back to the server
+# The updated configuration should be in the file 'updated_config.xml'
+# This file should be identical to 'config.xml', but with the updated description
+POST http://localhost:8080/view/MyView/config.xml
+Authorization: Basic {{ token }}
+Content-Type: application/xml
+
+<hudson.model.ListView>
+    <name>MyView</name>
+    <description>This view contains all jobs related to the 'JenkinsQA' project. It includes both build and test jobs. The view is updated automatically whenever a new job is added to the 'JenkinsQA' project.</description>
+    <filterExecutors>false</filterExecutors>
+    <filterQueue>false</filterQueue>
+    <properties class="hudson.model.View$PropertyList"/>
+    <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+        <string>MyJob</string>
+        <string>NewJob3</string>
+    </jobNames>
+    <jobFilters/>
+    <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+    </columns>
+    <recurse>false</recurse>
+</hudson.model.ListView>
 
 ###
 
 GET http://localhost:8080/api/json?pretty=true
 Accept: application/json
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+Authorization: Basic {{ token }}
 
 ###
-
+# Fetches the JSON representation of the first 10 jobs and views on the Jenkins server
 GET http://localhost:8080/api/json?tree=jobs[name],views[name,jobs[name]]{0,10}
 Accept: application/json
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+Authorization: Basic {{ token }}
 
 ###
 
 GET http://localhost:8080/api/json?tree=jobs[name,description,lastCompletedBuild[result],lastBuild[duration],nextBuildNumber]
 Accept: application/json
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+Authorization: Basic {{ token }}
 
 ###
 
-GET http://localhost:8080/job/NewJob3/api/json?tree=lastSuccessfulBuild[timestamp],lastFailedBuild[timestamp]
-Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+GET http://localhost:8080/job/MyJob/api/json?tree=lastSuccessfulBuild[timestamp],lastFailedBuild[timestamp]
+Authorization: Basic {{ token }}
+
+###
+
+GET http://localhost:8080/view/MyView/job/NewJob2/api/json?tree=lastBuild[result],name
+Authorization: Basic {{ token }}
 
 

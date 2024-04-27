@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 public class DateParse {
     public static void main(String[] args) {
-        long timestamp = 1714212196761L;
+        long timestamp = 1714220552991L;
         String formattedTime = convertTimestamp(timestamp);
         String formattedDuration = convertTimestampToDuration(timestamp);
         System.out.println(formattedTime + " Last Success " + formattedDuration);
@@ -26,6 +26,6 @@ public class DateParse {
         Duration duration = Duration.between(then, now);
         long hours = duration.toHours();
         long minutes = duration.toMinutes() % 60;
-        return hours + "hr " + minutes + " min";
+        return hours + " hr " + minutes + " min";
     }
 }
