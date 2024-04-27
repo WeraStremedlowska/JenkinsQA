@@ -3,8 +3,25 @@ GET https://ci.jenkins.io/api/json
 Accept: application/json
 
 ###
+
+@host = http://localhost:8080
+
+### Step 1: Get CSRF Token
+GET {{host}}/crumbIssuer/api/xml
+Authorization: Basic {{ token }}
+Accept: application/xml
+
+### Step 2: Trigger Jenkins Job with Parameters
+POST {{host}}/job/MyJob/buildWithParameters?javaVersion=17
+Authorization: Basic {{ token }}
+Content-Type: application/x-www-form-urlencoded
+CrumbRequestField: {{ crumbRequestField }}
+Crumb: {{ crumb }}
+
+
+###
 # Creates a new job on the Jenkins server
-POST http://localhost:8080/createItem?name=NewJob2
+POST {{host}}/createItem?name=NewJob2
 Content-Type: application/xml
 Authorization: Basic {{ token }}
 
@@ -27,21 +44,21 @@ Authorization: Basic {{ token }}
 
 ###
 
-POST http://localhost:8080/job/NewJob2/doDelete
+POST {{host}}/job/NewJob2/doDelete
 Content-Type: application/json
 Accept: application/json
 Authorization: Basic {{ token }}
 
 ###
 
-POST http://localhost:8080/view/NewView/doDelete
+POST {{host}}/view/NewView/doDelete
 Content-Type: application/json
 Accept: application/json
 Authorization: Basic {{ token }}
 
 ###
 # Creates a new view on the Jenkins server
-POST http://localhost:8080/createView?name=MyView
+POST {{host}}/createView?name=MyView
 Content-Type: application/xml
 Authorization: Basic {{ token }}
 
@@ -68,23 +85,18 @@ Authorization: Basic {{ token }}
 
 ###
 # Adds the job to the view on the Jenkins server
-POST http://localhost:8080/view/MyView/addJobToView?name=MyJob
+POST {{host}}/view/MyView/addJobToView?name=MyJob
 Content-Type: application/xml
 Authorization: Basic {{ token }}
 
 ###
-# Triggers a build for the job on the Jenkins server
-POST http://localhost:8080/job/NewJob2/build
-Authorization: Basic {{ token }}
 
-###
-
-POST http://localhost:8080/view/MyView/config.xml
+POST {{host}}/view/MyView/config.xml
 Authorization: Basic {{ token }}
 
 ###
 # Fetch the current configuration of the view
-GET http://localhost:8080/view/MyView/config.xml
+GET {{host}}/view/MyView/config.xml
 Authorization: Basic {{ token }}
 Accept: application/xml
 Output: config.xml
@@ -94,7 +106,7 @@ Output: config.xml
 # Post the updated configuration back to the server
 # The updated configuration should be in the file 'updated_config.xml'
 # This file should be identical to 'config.xml', but with the updated description
-POST http://localhost:8080/view/MyView/config.xml
+POST {{host}}/view/MyView/config.xml
 Authorization: Basic {{ token }}
 Content-Type: application/xml
 
@@ -121,33 +133,75 @@ Content-Type: application/xml
     </columns>
     <recurse>false</recurse>
 </hudson.model.ListView>
+###
+
+POST {{host}}/job/MyJob/config.xml
+Authorization: Basic {{ token }}
+Content-Type: application/xml
+
+<project>
+    <actions/>
+    <keepDependencies>false</keepDependencies>
+    <properties/>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders>
+        <hudson.tasks.Shell>
+            <command>java -version</command>
+        </hudson.tasks.Shell>
+    </builders>
+    <publishers/>
+    <buildWrappers/>
+</project>
 
 ###
 
-GET http://localhost:8080/api/json?pretty=true
+###
+# Triggers a build for the job on the Jenkins server
+POST {{host}}/job/MyJob/build
+Authorization: Basic {{ token }}
+
+###
+
+GET {{host}}/job/MyJob/lastBuild/api/json
+Authorization: Basic {{ token }}
 Accept: application/json
+
+###
+
+GET {{host}}/job/MyJob/lastBuild/consoleText
+Authorization: Basic {{ token }}
+
+###
+
+POST {{host}}/job/MyJob/lastBuild/doDelete
 Authorization: Basic {{ token }}
 
 ###
 # Fetches the JSON representation of the first 10 jobs and views on the Jenkins server
-GET http://localhost:8080/api/json?tree=jobs[name],views[name,jobs[name]]{0,10}
+GET {{host}}/api/json?tree=jobs[name],views[name,jobs[name]]{0,10}
 Accept: application/json
 Authorization: Basic {{ token }}
 
 ###
 
-GET http://localhost:8080/api/json?tree=jobs[name,description,lastCompletedBuild[result],lastBuild[duration],nextBuildNumber]
+GET {{host}}/api/json?tree=jobs[name,description,lastCompletedBuild[result],lastBuild[duration],nextBuildNumber]
 Accept: application/json
 Authorization: Basic {{ token }}
 
 ###
 
-GET http://localhost:8080/job/MyJob/api/json?tree=lastSuccessfulBuild[timestamp],lastFailedBuild[timestamp]
+GET {{host}}/job/MyJob/api/json?tree=lastSuccessfulBuild[timestamp],lastFailedBuild[timestamp]
 Authorization: Basic {{ token }}
 
 ###
 
-GET http://localhost:8080/view/MyView/job/NewJob2/api/json?tree=lastBuild[result],name
+GET {{host}}/view/MyView/job/NewJob2/api/json?tree=lastBuild[result],name
 Authorization: Basic {{ token }}
 
 

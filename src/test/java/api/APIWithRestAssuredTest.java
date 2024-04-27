@@ -2,12 +2,14 @@ package api;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 public class APIWithRestAssuredTest extends JenkinsApi {
 
@@ -16,6 +18,7 @@ public class APIWithRestAssuredTest extends JenkinsApi {
 
     @BeforeEach
     public void setup() {
+        RestAssured.defaultParser = Parser.JSON;
         RestAssured.baseURI = "http://localhost:8080";
         String encodedAuthString = getEncodedAuthString();
         if (encodedAuthString == null) {
@@ -63,8 +66,10 @@ public class APIWithRestAssuredTest extends JenkinsApi {
                 .basic(username, token)
                 .when()
                 .post("/job/NewJobRA/doDelete")
+                .peek() // print the response body to the console
                 .then()
-                .statusCode(302);
+                .statusCode(302)
+                .header("Location", "http://localhost:8080/");
     }
 }
 
