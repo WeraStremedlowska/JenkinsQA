@@ -72,7 +72,7 @@ jobs:
         run: |
           Xvfb :99 &
           echo "DISPLAY=:99" >> $GITHUB_ENV
-          ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :99.0 output.mp4 &
+          ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :99.0 output.webm &
 
       - name: Maven test
         run: mvn test
@@ -88,7 +88,7 @@ jobs:
           name: screenshots-and-report
           path: |
             screenshots
-            output.mp4
+            output.webm
 
       - name: Test Reporter
         uses: dorny/test-reporter@v1.8.0
