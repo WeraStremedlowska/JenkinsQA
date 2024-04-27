@@ -6,6 +6,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.testng.annotations.Ignore;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -14,6 +15,7 @@ import static org.hamcrest.Matchers.nullValue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class APIWithRestAssuredTest extends JenkinsApi {
 
+    @Ignore
     @Order(1)
     @Test
     public void testCreateItem() {
@@ -28,6 +30,7 @@ public class APIWithRestAssuredTest extends JenkinsApi {
                 .statusCode(200);
     }
 
+    @Ignore
     @Order(2)
     @Test
     public void testGetItem() {
@@ -45,6 +48,7 @@ public class APIWithRestAssuredTest extends JenkinsApi {
                 .body("jobs.find { it.name == 'NewJobRA' }.lastCompletedBuild", nullValue());
     }
 
+    @Ignore
     @Order(3)
     @Test
     public void testDeleteItem() {

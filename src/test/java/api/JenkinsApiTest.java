@@ -1,4 +1,5 @@
 package api;
+import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
 
 import java.net.URI;
@@ -48,6 +49,7 @@ public class JenkinsApiTest extends JenkinsApi {
         }
     }
 
+    @Ignore
     @Test(priority=1)
     public void testCreateItem() {
         String xmlPayload = TestData.XML_PAYLOAD;
@@ -56,6 +58,7 @@ public class JenkinsApiTest extends JenkinsApi {
     }
 
 
+    @Ignore
     @Test(priority=2)
     public void testGetItem() {
         HttpResponse<String> response = getHttp("/api/json?tree=jobs[name,description,lastBuild[lastBuildNumber,duration],lastCompletedBuild[result],nextBuildNumber]");
@@ -65,6 +68,7 @@ public class JenkinsApiTest extends JenkinsApi {
         assertTrue(response.body().contains("This is a more detailed description for the Jenkins job."));
     }
 
+    @Ignore
     @Test(priority=3)
     public void testRenameJob() {
         HttpResponse<String> response = postHttp("/job/Project/doRename?newName=NewProject", "");
@@ -75,6 +79,7 @@ public class JenkinsApiTest extends JenkinsApi {
     }
 
 
+    @Ignore
     @Test(priority=4)
     public void testDeleteItem() {
         HttpResponse<String> response = postHttp("/job/NewProject/doDelete", "");

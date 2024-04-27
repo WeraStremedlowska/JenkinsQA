@@ -85,11 +85,8 @@ jobs:
          CI_RUN: true
 
 
-      - name: Delay
-        run: sleep 60
-
       - name: Attach screenshots and reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: screenshots-and-report
