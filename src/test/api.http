@@ -1,0 +1,72 @@
+GET https://ci.jenkins.io/api/json
+Accept: application/json
+
+###
+
+POST http://localhost:8080/createItem?name=NewJob2
+Content-Type: application/xml
+Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+
+<project>
+    <actions/>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <properties/>
+    <scm class="hudson.scm.NullSCM"/>
+    <canRoam>true</canRoam>
+    <disabled>false</disabled>
+    <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+    <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+    <triggers/>
+    <concurrentBuild>false</concurrentBuild>
+    <builders/>
+    <publishers/>
+    <buildWrappers/>
+</project>
+
+###
+
+GET http://localhost:8080/api/json?pretty=true
+Accept: application/json
+Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+
+###
+
+GET http://localhost:8080/api/json?tree=jobs[NewJob]{0,10}
+Accept: application/json
+Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+
+###
+
+POST http://localhost:8080/createView?name=NewView
+Content-Type: application/xml
+Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+
+<listView>
+    <name>NewView</name>
+    <filterExecutors>false</filterExecutors>
+    <filterQueue>false</filterQueue>
+    <properties class="hudson.model.View$PropertyList"/>
+    <jobNames>
+        <comparator class="hudson.util.CaseInsensitiveComparator"/>
+    </jobNames>
+    <jobFilters/>
+    <columns>
+        <hudson.views.StatusColumn/>
+        <hudson.views.WeatherColumn/>
+        <hudson.views.JobColumn/>
+        <hudson.views.LastSuccessColumn/>
+        <hudson.views.LastFailureColumn/>
+        <hudson.views.LastDurationColumn/>
+        <hudson.views.BuildButtonColumn/>
+    </columns>
+    <recurse>false</recurse>
+</listView>
+
+###
+
+GET http://localhost:8080/api/json?tree=jobs[NewJob],views[NewView,jobs[NewJob, NewJob1, NewJob2]]
+Accept: application/json
+Authorization: Basic d2VyYV9zdHJlbWVkbG93c2thOjExN2RiZGIyN2VkYmM3MTA0OTk4Nzk4ZDhhMmRkNmJlMGQ=
+
+
