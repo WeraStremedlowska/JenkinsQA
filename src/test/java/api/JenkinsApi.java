@@ -15,10 +15,10 @@ public abstract class JenkinsApi {
         Properties prop = new Properties();
         try (FileInputStream input = new FileInputStream(Paths.get("src", "test", "resources", "local.properties").toString())) {
             prop.load(input);
-            this.username = prop.getProperty("local.admin.username");
-            this.token = prop.getProperty("token");
+            this.username = "wera_stremedlowska";
+            this.token = "117dbdb27edbc7104998798d8a2dd6be0d";
 
-            if (username != null && token != null) {
+            if (username != null) {
                 String authString = username + ":" + token;
                 this.encodedAuthString = Base64.getEncoder().encodeToString(authString.getBytes());
             }
