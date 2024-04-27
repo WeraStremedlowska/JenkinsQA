@@ -6,10 +6,10 @@ import java.nio.file.Paths;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-public class JenkinsApi {
+public abstract class JenkinsApi {
     protected String username;
     protected String token;
-    protected String encodedAuthString;
+    private static String encodedAuthString;
 
     public JenkinsApi() {
         Properties prop = new Properties();
@@ -27,7 +27,7 @@ public class JenkinsApi {
         }
     }
 
-    public String getEncodedAuthString() {
+    protected static String getEncodedAuthString() {
         return encodedAuthString;
     }
 }

@@ -44,6 +44,12 @@ Authorization: Basic {{ token }}
 
 ###
 
+POST {{host}}/job/DeleteGitRepo/doRename?newName=NewJobName
+Accept: application/json
+Authorization: Basic {{ token }}
+
+###
+
 POST {{host}}/job/NewJob2/doDelete
 Content-Type: application/json
 Accept: application/json

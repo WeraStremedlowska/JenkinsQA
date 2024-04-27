@@ -8,7 +8,7 @@ public class SmokeTest extends BaseTest {
 
     @Test
     public void testWelcome() {
-        WebElement welcomeText = getDriver().findElement(By.cssSelector(".empty-state-block > h1"));
+        WebElement welcomeText = getDriver().findElement(By.cssSelector(".empty-state-block > h7"));
 
         Assert.assertEquals(welcomeText.getText(), "Welcome to Jenkins!");
     }

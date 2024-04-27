@@ -58,6 +58,22 @@ jobs:
       - name: Wait for the Jenkins
         run: ./.github/wait-for-jenkins.sh
 
+      - name: Install FFMPEG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: Install xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb
+
+      - name: Run FFMPEG
+        run: |
+          Xvfb :99 &
+          echo "DISPLAY=:99" >> $GITHUB_ENV
+          ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :99.0 output.mp4 &
+
       - name: Maven test
         run: mvn test
         env:
