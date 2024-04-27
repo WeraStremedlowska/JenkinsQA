@@ -71,18 +71,19 @@ jobs:
       - name: Run FFMPEG
         run: |
           Xvfb :99 -screen 0 1024x768x24 &
-          sleep 5  # gives Xvfb some time to start
+          sleep 5  # Ensures Xvfb starts
           xset -display :99 q || echo "Xvfb did not start properly" >&2
           echo "DISPLAY=:99" >> $GITHUB_ENV
-          ffmpeg -video_size 1024x768 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -t 10 output.webm 2> ffmpeg_error.log &
+          ffmpeg -video_size 1024x768 -framerate 30 -f x11grab -i :99.0 -c:v libx264 -t 10 -report output.webm &
 
       - name: Maven test
         run: mvn test
         env:
-          DISPLAY: :99
-          CHROME_OPTIONS: --remote-allow-origins=*;--disable-gpu;--no-sandbox;--disable-dev-shm-usage;--headless=new;--window-size=1920,1080
-          APP_OPTIONS: host=localhost;port=8080;admin.username=${{ secrets.ADMIN_USERNAME }};admin.password=${{ secrets.ADMIN_PASSWORD }}
-          CI_RUN: true
+         DISPLAY: :99
+         CHROME_OPTIONS: --remote-allow-origins=*;--disable-gpu;--no-sandbox;--disable-dev-shm-usage;--headless=new;--window-size=1920,1080
+         APP_OPTIONS: host=localhost;port=8080;admin.username=${{ secrets.ADMIN_USERNAME }};admin.password=${{ secrets.ADMIN_PASSWORD }}
+         CI_RUN: true
+
 
       - name: Delay
         run: sleep 60
@@ -93,7 +94,6 @@ jobs:
         with:
           name: screenshots-and-report
           path: output.webm
-
 
       - name: Test Reporter
         uses: dorny/test-reporter@v1.8.0
